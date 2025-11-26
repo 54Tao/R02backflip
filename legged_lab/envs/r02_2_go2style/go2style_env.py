@@ -1,8 +1,8 @@
 """
-Go2Style Environment - 精确复现 go2backflip 的观测空间
+Go2Style Environment
 
 与 BaseEnv 的区别：
-- 观测空间完全匹配 go2backflip（48维 policy, 52维 critic）
+- 观测空间（48维 policy, 52维 critic）
 - 移除 command 观测（后空翻不需要）
 - 移除 clock_inputs 观测（go2不使用）
 - 移除 backflip 专用观测（com_height, stage等）
@@ -16,7 +16,7 @@ from legged_lab.envs.r02_2_go2style import rewards as go2_rewards
 
 class Go2StyleEnv(BaseEnv):
     """
-    Go2Style Environment - 精确复现 go2backflip 观测空间
+    Go2Style Environment 
 
     观测维度：
     - Policy: 48维
@@ -35,7 +35,7 @@ class Go2StyleEnv(BaseEnv):
 
     def compute_current_observations(self) -> tuple[torch.Tensor, torch.Tensor]:
         """
-        计算当前观测 - 完全匹配 go2backflip
+        计算当前观测
 
         Returns:
             actor_obs: (num_envs, 48) - policy observations
@@ -59,7 +59,7 @@ class Go2StyleEnv(BaseEnv):
         # 5. 上一步动作 (12D)
         last_action = self.action_buffer._circular_buffer.buffer[:, -1, :]
 
-        # 6. Phase 编码 (6D) - go2backflip 的时间编码
+        # 6. Phase 编码 (6D)
         phase_obs = go2_rewards.phase_encoding(self)
 
         # ========== Policy 观测 (48D) ==========

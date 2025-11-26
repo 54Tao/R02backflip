@@ -117,7 +117,6 @@ def update_backflip_stages(env: "BaseEnv") -> None:
     """
     更新后空翻阶段状态（时间驱动版本）
 
-    3秒Episode时间分配（按go2backflip的2秒比例缩放）：
     - Stage 0 (Stand):  0 - 0.45s   (15%)
     - Stage 1 (Down):   0.45 - 0.75s (10%)
     - Stage 2 (Jump):   0.75 - 1.05s (10%)
@@ -367,7 +366,7 @@ def phase_encoding(env: "BaseEnv") -> torch.Tensor:
     """
     Phase编码：sin/cos多频编码（6维）
     替代Stage one-hot，提供更平滑的时间信息
-    参考go2backflip实现
+
     """
     current_time = env.episode_length_buf * env.step_dt
     max_time = 3.0  # 匹配新的Episode长度
@@ -394,7 +393,6 @@ def orientation_control_l2(env: "BaseEnv", asset_cfg: SceneEntityCfg = SceneEnti
     - Stage 4: 恢复直立
 
     RO2前方是+Y，后空翻绕X轴旋转，所以计算roll角（而不是pitch）
-    参考go2backflip的orientation_control_l2，但改用roll公式
     """
     asset: Articulation = env.scene[asset_cfg.name]
     current_time = env.episode_length_buf * env.step_dt
@@ -473,7 +471,6 @@ def height_control_l2(env: "BaseEnv", asset_cfg: SceneEntityCfg = SceneEntityCfg
     """
     高度控制惩罚：非翻转时期保持目标高度
     在翻转外的时间（<0.6s或>2.1s）惩罚高度偏差
-    参考go2backflip，时间窗口从2s缩放到3s
     """
     asset: Articulation = env.scene[asset_cfg.name]
     current_time = env.episode_length_buf * env.step_dt
@@ -496,7 +493,6 @@ def feet_height_before_backflip_l1(
     """
     翻转前足部离地惩罚（时间窗口版）
     在t<0.75s时，足部不能离地
-    参考go2backflip，时间窗口从2s缩放到3s
     """
     asset: Articulation = env.scene[asset_cfg.name]
     current_time = env.episode_length_buf * env.step_dt
@@ -524,7 +520,6 @@ def feet_height_after_backflip_l1(
     """
     翻转后足部离地惩罚（时间窗口版）
     在t>2.25s时，足部不能离地
-    参考go2backflip，时间窗口从2s缩放到3s
     """
     asset: Articulation = env.scene[asset_cfg.name]
     current_time = env.episode_length_buf * env.step_dt
@@ -640,7 +635,7 @@ def feet_distance_y_exp(
     asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
     """
-    足端站距稳定性奖励（参考go2backflip）
+    足端站距稳定性奖励
     鼓励机器人保持合理的左右站距，避免站姿不稳
 
     Args:

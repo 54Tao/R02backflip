@@ -1,5 +1,5 @@
 """
-RO2后空翻奖励函数 - 完全复现go2backflip
+RO2后空翻奖励函数 
 坐标系适配：RO2的Y轴在前，后空翻绕X轴旋转
 
 Go2坐标系: X-前, Y-左, Z-上 -> 后空翻绕Y轴
@@ -243,7 +243,6 @@ def undesired_contacts_base(
 def phase_encoding(env: "BaseEnv") -> torch.Tensor:
     """
     Phase编码：sin/cos多频编码（6维）
-    与go2backflip完全一致
     """
     current_time = env.episode_length_buf * env.step_dt
     max_time = 2.0  # Episode长度

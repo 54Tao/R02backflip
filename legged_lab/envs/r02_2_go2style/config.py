@@ -1,7 +1,4 @@
-"""
-RO2后空翻训练配置 - 完全复现go2backflip
-除了机器人用RO2，其他参数完全照搬go2backflip
-"""
+
 
 import math
 from legged_lab.envs.base.base_env_config import BaseEnvCfg, RewardCfg, BaseAgentCfg
@@ -17,7 +14,7 @@ from isaaclab_rl.rsl_rl import RslRlPpoAlgorithmCfg, RslRlPpoActorCriticCfg
 
 
 class R02Go2StyleEnvCfg(BaseEnvCfg):
-    """RO2后空翻环境配置 - go2backflip风格"""
+    """RO2后空翻环境配置 """
 
     def __post_init__(self):
         super().__post_init__()
@@ -25,10 +22,10 @@ class R02Go2StyleEnvCfg(BaseEnvCfg):
         # 设置机器人
         self.scene.robot = R02_2_CFG
 
-        # 场景配置 - 完全照搬go2backflip
+        # 场景配置 
         self.scene.num_envs = 4096
         self.scene.env_spacing = 4.0
-        self.scene.max_episode_length_s = 2.0  # go2backflip是2秒
+        self.scene.max_episode_length_s = 2.0  # 
 
         # 平坦地形
         self.scene.terrain_type = "plane"
@@ -36,14 +33,14 @@ class R02Go2StyleEnvCfg(BaseEnvCfg):
 
         # PD参数 - 根据RO2电机力矩调整
         self.robot.stiffness = 35.0      # 按力矩比例：17/23.5 × 25 = 18
-        self.robot.damping = 0.5         # go2backflip是0.5
+        self.robot.damping = 0.5         
         self.robot.action_scale = 0.4    # 降低到0.4，避免动作过大
 
         # 终止条件：仅超时（无接触终止）
         self.robot.terminate_contacts_body_names = []  # 无接触终止
         self.robot.feet_body_names = [".*3_.*"]
 
-        # 观测配置 - 简化为单帧（go2backflip没有历史）
+        # 观测配置 - 简化为单帧（）
         self.robot.actor_obs_history_length = 1
         self.robot.critic_obs_history_length = 1
 
@@ -53,7 +50,7 @@ class R02Go2StyleEnvCfg(BaseEnvCfg):
         self.commands.ranges.lin_vel_y = (0.0, 0.0)
         self.commands.ranges.ang_vel_z = (0.0, 0.0)
 
-        # 域随机化 - 完全照搬go2backflip
+        # 域随机化
         self.domain_rand.events.reset_base = EventTerm(
             func=mdp.reset_root_state_uniform,
             mode="reset",
@@ -80,7 +77,7 @@ class R02Go2StyleEnvCfg(BaseEnvCfg):
             }
         )
 
-        # 禁用外力扰动（go2backflip没有）
+        # 禁用外力扰动
         self.domain_rand.events.push_robot = None
 
         # 设置质量随机化的body_names（基础配置必需）
@@ -90,8 +87,7 @@ class R02Go2StyleEnvCfg(BaseEnvCfg):
 
 class R02Go2StyleRewardCfg(RewardCfg):
     """
-    RO2后空翻奖励配置 - 完全复现go2backflip
-    权重完全照搬，只改坐标系
+    RO2后空翻奖励配置 
     """
 
     # 1. 终止惩罚 (go2: -5000)
@@ -238,7 +234,7 @@ class R02Go2StyleRewardCfg(RewardCfg):
 
 @configclass
 class R02Go2StyleTerminationsCfg:
-    """终止条件 - 仅超时（go2backflip风格）"""
+    """终止条件"""
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
 
@@ -253,14 +249,14 @@ class R02Go2StyleFlatEnvCfg(R02Go2StyleEnvCfg):
 
 
 class R02Go2StyleAgentCfg(BaseAgentCfg):
-    """训练Agent配置 - 完全照搬go2backflip"""
+    """训练Agent"""
 
     seed = 42
     device = "cuda:0"
 
-    num_steps_per_env = 16  # go2backflip
+    num_steps_per_env = 16  
     max_iterations = 10000
-    save_interval = 50  # go2backflip
+    save_interval = 50 
 
     experiment_name = "r02_go2style_backflip"
 
@@ -268,7 +264,7 @@ class R02Go2StyleAgentCfg(BaseAgentCfg):
     load_run = None  # 不加载预训练权重
     load_checkpoint = None  # 不加载检查点
 
-    # 网络架构配置（完全照搬go2backflip）
+    # 网络架构配置
     policy = RslRlPpoActorCriticCfg(
         class_name="ActorCritic",
         init_noise_std=1.0,
@@ -278,20 +274,20 @@ class R02Go2StyleAgentCfg(BaseAgentCfg):
         activation="elu",
     )
 
-    # PPO配置 - 完全照搬go2backflip
+    # PPO配置
     algorithm = RslRlPpoAlgorithmCfg(
         class_name="PPO",
         value_loss_coef=1.0,
         use_clipped_value_loss=True,
         clip_param=0.2,
-        entropy_coef=0.005,  # go2backflip是0.005
+        entropy_coef=0.005,  
         num_learning_epochs=5,
         num_mini_batches=4,
-        learning_rate=1.0e-3,  # go2backflip是1e-3
+        learning_rate=1.0e-3,  
         schedule="adaptive",
         gamma=0.99,
         lam=0.95,
-        desired_kl=0.01,  # go2backflip是0.01
+        desired_kl=0.01,  
         max_grad_norm=1.0,
         normalize_advantage_per_mini_batch=False,
         symmetry_cfg=None,
